@@ -14,7 +14,7 @@ export default function Partners() {
   return (
     <div>
     <div >
-        <h3 class="nsTitleSm">OUR PARTNERS</h3>
+        <h2 class="nsTitle">OUR PARTNERS</h2>
     </div>     
            <Grid className='classPartners'>
         

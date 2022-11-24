@@ -1,151 +1,123 @@
-import { useState, useRef } from "react";  
-import styled from 'styled-components';
+import React, { useState } from "react";
+import {Link,useNavigate} from "react-router-dom"
+import sign from "./sign.css"
+
+function SignIn({ setUser }) {
+  const [role, setRole] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  // const [errors, setErrors] = useState([]);
+  const [msg, setMsg] = useState(null);
+ const navigate = useNavigate();
 
 
-function SignIn() {
-
-const App = styled.div`
-text-align: center;
-background: linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.2),rgba(0,0,0,0.2)), url('https://content.presentermedia.com/content/animsp/00004000/4786/kenya_flag_perspective_anim_300_wht.gif');
-background-size: contain;
-`
-const Styledlabel = styled.label`
-display: block;
-font-size: larger;
-color: #00171F;
-padding: 5px;
-`
-const Styledinput = styled.input`
-font-size: larger;
-padding: 5px;
-margin: 2px;
-` 
-const Styledbutton = styled.button`
-color: white;
-background-color: red;
-border-radius: 5px;
-font-size: larger;
-display: block;
-padding: 5px;
-margin: 10px auto;
-`
-const Imagepositioning = styled.div`
-padding: 10px;
-`
-const Styledmessages = styled.div`
-display: flex;
-  justify-content: center;`
-
-const Stylederrors = styled.div`
-display: block;
-background-color: red;
-color: white;
-width: fit-content;
-height: 50px;
-padding: 5px;
-`
-const Styledsuccess = styled.div`
-display: block;
-  background-color: lightblue;
-  color: black;
-  width: fit-content;
-  height: 50px;
-  padding: 5px;
-`
-// States for registration
-const [name, setName] = useState('');
-const [password, setPassword] = useState('');
-
-// States for checking the errors
-const [submitted, setSubmitted] = useState(false);
-const [error, setError] = useState(false);
-
-const ref= useRef(null);
-// Handling the name change
-const handleName = (e) => {
-setName(e.target.value);
-};
-
-
-// Handling the password change
-const handlePassword = (e) => {
-setPassword(e.target.value);
-};
-
-// Handling the form submission
-const handleSubmit = (e) => {
-e.preventDefault();
-if (name === ''|| password === '') {
-setError(true);
-} else {
-setSubmitted(true);
-setError(false);
-}
-};
-
-// Showing success message
-const successMessage = () => {
-return (
-<Styledsuccess
-className="success"
-style={{
-display: submitted ? '' : 'none',
-}}>
-<h1>User {name} successfully registered!!</h1>
-</Styledsuccess>
-);
-};
-
-// Showing error message if error is true
-const errorMessage = () => {
-return (
-<Stylederrors
-className="error"
-style={{
-display: error ? '' : 'none',
-}}>
-<h1>Please enter all the fields</h1>
-</Stylederrors>
-);
-};
-
-return (
-<App className="form">
-
-
-<div>
-<Imagepositioning><h1><img src='../images/mkono.png' alt="" width={100} height={100} /></h1></Imagepositioning>
-</div>
-
-{/* Calling to the methods */}
-<Styledmessages className="messages">
-{errorMessage()}
-{successMessage()}
-</Styledmessages>
-
-<form>
-{/* Labels and inputs for form data */}
-<Styledlabel><label for="membership">Admin/User:</label></Styledlabel>
-<select name="membership" id="membership">
-  <option value="admin">Admin</option>
-  <option value="user">User</option>
-  </select>
-
-<Styledlabel><label className="label"> Username</label></Styledlabel>
-<Styledinput  input ref={ref}  className="input" defaultvalue={name} type="text" />
-
-<Styledlabel><label className="label">Password</label></Styledlabel>
-< Styledinput input ref={ref}  className="input"
-defaultvalue={password} type="password" />
-
-
-<Styledbutton onClick={handleSubmit} className="btn" type="submit">
-Login</Styledbutton>
-<div>Do you have an account? Signup</div>
-</form>
-
-</App>
  
+
+
+ 
+
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    fetch("https://irep-backend.herokuapp.com/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    }).then((r) => {
+      if (r.ok) {
+        r.json().then((data) => {
+          setUser(data.user)
+          setRole(data.user_type)
+        localStorage.setItem('user',JSON.stringify(data.user));
+        {data.user.user_type === 'admin' ?  navigate('/admin') : navigate('/user')}
+        // navigate(role? "/user":"/admin")
+        });
+        
+
+      } else setMsg("Invalid Username or Password");
+    });
+  }
+
+  return (
+    <>
+    <div className=" bg-slate-900 bg-no-repeat bg-cover  h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <img className="mx-auto h-12 w-auto" src="https://previews.123rf.com/images/ijacky/ijacky1309/ijacky130900606/22337481-fist-of-kenya-flag-painted-multi-purpose-concept-isolated-on-white-background.jpg" alt="logo" />
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-500"
+              >
+                Username
+              </label>
+              <div className="mt-1">
+                <input
+                  id="username"
+                  name="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  type="text"
+                  autoComplete="username"
+                  required
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-color focus:border-primary-color sm:text-sm"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-500"
+              >
+                Password
+              </label>
+              <div className="mt-1">
+                <input
+                  id="password"
+                  name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-color focus:border-primary-color sm:text-sm"
+                />
+              </div>
+            </div>
+            <div>
+            {msg ? (
+          <div className="error-msg">
+            <h5 className="error-text">Invalid username or password!!.</h5>
+          </div>
+        ) : // <h6><a href="">forgot password</a></h6>
+        null}
+              <button
+                type="submit"
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-slate-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue"
+              >
+                Sign in
+              </button>
+              <p className="py-2 text-center">
+                  Don't have an account yet?{" "}
+                  <Link to="/signup" className="underline text-primary-color">
+                    Sign up.
+                  </Link>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </>
 );
-}
-export default SignIn
+};
+
+export default SignIn;

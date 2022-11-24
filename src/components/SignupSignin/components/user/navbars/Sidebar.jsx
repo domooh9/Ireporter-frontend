@@ -7,12 +7,12 @@ import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import Logout from "./Logout"
-
+import Logout from "./Logout";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
   return (
     <MenuItem
       active={selected === title}
@@ -33,8 +33,10 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const user = JSON.parse(localStorage.getItem("user"));
 
   return (
+    
     <Box
       sx={{
         "& .pro-sidebar-inner": {
@@ -88,21 +90,25 @@ const Sidebar = () => {
 
           {!isCollapsed && (
             <Box mb="25px">
-              <Box display="flex" justifyContent="center" alignItems="center">
-             </Box>
-              <Box textAlign="center">
-               </Box>
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              ></Box>
+              <Box textAlign="center"></Box>
             </Box>
           )}
 
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
-            <Item
-              title="Dashboard"
-              to="/"
-              icon={<HomeOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+            {user.id && (
+              <Item
+                title="Dashboard"
+                to={`/user/${user.id}`}
+                icon={<HomeOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            )}
 
             <Item
               title="Create a record"
@@ -111,11 +117,16 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-           <Logout />
+            
           </Box>
+         
         </Menu>
       </ProSidebar>
+      <div className="logstyle">
+      <Logout /> 
+      </div> 
     </Box>
+    
   );
 };
 
